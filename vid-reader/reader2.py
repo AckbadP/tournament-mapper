@@ -1,5 +1,6 @@
 import cv2
 import pytesseract
+import numpy as np
 from pytesseract import Output
 
 PATH = "data/"
@@ -31,9 +32,12 @@ def image_to_data(input_img):
 
 def draw_bounding_boxes(img_in, img_out):
     img = cv2.imread(img_in)
+    img = preprocessing(img)
+    text = pytesseract.image_to_string(img)
+    print(text.strip())
 
    # Extract data
-    data = image_to_data(img_in)
+    data = data = pytesseract.image_to_data(img, output_type=Output.DICT)
     n_boxes = len(data["text"])
 
     for i in range(n_boxes):
@@ -56,11 +60,47 @@ def draw_bounding_boxes(img_in, img_out):
     # Save the image with boxes
     cv2.imwrite(img_out, img)
 
+
+# Preprocessing funcs
+
 def grayscale(img):
     '''
     convert image to grayscale
     '''
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+def denoise(img):
+    '''
+    slightly blure image to reduce noise
+    '''
+    return cv2.medianBlur(img, 5)
+
+def sharpen(img):
+    '''
+    sharpen image via Laplacian filter
+    '''
+    kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
+    return cv2.filter2D(img, -1, kernel)
+
+def binarization(img):
+    '''
+    use addaptive thresholding to binarize img
+    '''
+    thresh = cv2.adaptiveThreshold(
+        img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2
+    )
+    return thresh
+
+# can also try dilation, erosion, and canny edge detection
+
+def preprocessing(img):
+    img = grayscale(img)
+    #img = denoise(img)
+    #img = sharpen(img)
+    img = binarization(img)
+
+    return img
+
 
 print("------ Easy 1 ------")
 print(image_to_text(EASY))
@@ -69,30 +109,5 @@ print("------ Easy 2 ------")
 print(image_to_text(EASY_TWO))
 print(len(image_to_data(EASY_TWO)["text"]))
 
+print("------ Easy Test ------")
 draw_bounding_boxes(EASY_TEST, OUT)
-
-'''img = cv2.imread(EASY_TWO)
-data = image_to_data(EASY_TWO)
-n_boxes = len(data["text"])
-
-for i in range(n_boxes):
-    if data["conf"][i] == -1:
-        continue
-    # coords
-    x, y = data["left"][i], data["top"][i]
-    w, h = data["width"][i], data["height"][i]
-
-
-    # corners
-    top_left = (x,y)
-    bottom_right = (x+w, y+h)
-
-    # box params
-    green = (0, 255, 0)
-    thickness = 3
-
-    cv2.rectangle(
-        img=img, pt1=top_left, pt2=bottom_right, color=green, thickness=thickness
-    )
-
-cv2.imwrite(OUT, img)'''
