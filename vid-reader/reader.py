@@ -62,7 +62,7 @@ def match_template(image, template):
 
 # pring text in image
 def image_text(image):
-    print(pytesseract.image_to_string(image))
+    print(pytesseract.image_to_string(image).strip())
 
 path = 'data/'
 test_image = path + 'test1.png'
@@ -74,7 +74,8 @@ gray_img = get_grayscale(img)
 image_text(gray_img)
 
 print("\n--- Thresholding ---\n")
-image_text(thresholding(img))
+#img = cv2.imread(test_image)
+#image_text(thresholding(img))
 
 print("\n--- Opening ---\n")
 image_text(opening(img))
