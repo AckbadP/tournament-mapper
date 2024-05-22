@@ -2,12 +2,14 @@ import cv2
 import pytesseract
 import numpy as np
 from pytesseract import Output
+import argparse
+import imutils
 
 PATH = "data/"
 OUT = PATH+"out.png"
 EASY = PATH + "easy1.png"
 EASY_TWO = PATH + "easy2.png"
-EASY_TEST = PATH + "test1.png"
+EASY_TEST = PATH + "test6.png"
 
 # ref: https://www.datacamp.com/tutorial/optical-character-recognition-ocr-in-python-with-pytesseract
 def image_to_text(input_img):
@@ -82,7 +84,7 @@ def sharpen(img):
     kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
     return cv2.filter2D(img, -1, kernel)
 
-def binarization(img):
+def adaptive_binarization(img):
     '''
     use addaptive thresholding to binarize img
     '''
@@ -91,13 +93,34 @@ def binarization(img):
     )
     return thresh
 
+def otsu_binarization(img):
+    '''
+    threshold the image using Otsu's thresholding method
+    '''
+    return cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+
+def dist_thresh(img):
+    '''
+    apply distance transformation, normalice, then thresh
+    '''
+    img = cv2.distanceTransform(img, cv2.DIST_L2, 5)
+    img = cv2.normalize(img, img, 0, 1.0, cv2.NORM_MINMAX)
+    img = (img * 255).astype("uint8")
+
+    img = cv2.threshold(img, 0, 255,
+	    cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+
+    return img
+
 # can also try dilation, erosion, and canny edge detection
 
 def preprocessing(img):
     img = grayscale(img)
+    img = otsu_binarization(img)
+    #img = adaptive_binarization(img)
+    #img = dist_thresh(img)
     #img = denoise(img)
     #img = sharpen(img)
-    img = binarization(img)
 
     return img
 
