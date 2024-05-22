@@ -4,6 +4,7 @@ import numpy as np
 from pytesseract import Output
 import argparse
 import imutils
+from PIL import Image
 
 PATH = "data/"
 OUT = PATH+"out.png"
@@ -112,9 +113,18 @@ def dist_thresh(img):
 
     return img
 
+def resize(img):
+    '''
+    resize image to make reading easier
+    '''
+    scale = 2
+    return cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+
+
 # can also try dilation, erosion, and canny edge detection
 
 def preprocessing(img):
+    img = resize(img)
     img = grayscale(img)
     img = otsu_binarization(img)
     #img = adaptive_binarization(img)
@@ -125,12 +135,12 @@ def preprocessing(img):
     return img
 
 
-print("------ Easy 1 ------")
+'''print("------ Easy 1 ------")
 print(image_to_text(EASY))
 print(len(image_to_data(EASY)["text"]))
 print("------ Easy 2 ------")
 print(image_to_text(EASY_TWO))
-print(len(image_to_data(EASY_TWO)["text"]))
+print(len(image_to_data(EASY_TWO)["text"]))'''
 
 print("------ Easy Test ------")
 draw_bounding_boxes(EASY_TEST, OUT)
