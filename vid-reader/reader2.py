@@ -10,7 +10,7 @@ PATH = "data/"
 OUT = PATH+"out.png"
 EASY = PATH + "easy1.png"
 EASY_TWO = PATH + "easy2.png"
-EASY_TEST = PATH + "test6.png"
+EASY_TEST = PATH + "test2.png"
 
 TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
 TES_LANG = 'eng_slashed_zeros'
@@ -127,8 +127,7 @@ def resize(img):
 # can also try dilation, erosion, and canny edge detection
 
 def preprocessing(img):
-    #img = resize(img)
-    img = imutils.resize(img, width=500)
+    img = imutils.resize(img, width=5000)
     img = grayscale(img)
     img = otsu_binarization(img)
     #img = adaptive_binarization(img)
