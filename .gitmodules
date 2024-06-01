@@ -1,0 +1,3 @@
+[submodule "SlashedZeroOCR"]
+	path = SlashedZeroOCR
+	url = git@github.com:yusufuyanik1/SlashedZeroOCR.git

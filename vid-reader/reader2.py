@@ -12,6 +12,9 @@ EASY = PATH + "easy1.png"
 EASY_TWO = PATH + "easy2.png"
 EASY_TEST = PATH + "test6.png"
 
+TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
+TES_LANG = 'eng_slashed_zeros'
+
 # ref: https://www.datacamp.com/tutorial/optical-character-recognition-ocr-in-python-with-pytesseract
 def image_to_text(input_img):
     '''
@@ -36,11 +39,11 @@ def image_to_data(input_img):
 def draw_bounding_boxes(img_in, img_out):
     img = cv2.imread(img_in)
     img = preprocessing(img)
-    text = pytesseract.image_to_string(img, lang='eng', config='--psm 6')
+    text = pytesseract.image_to_string(img, lang=TES_LANG, config=TES_CONFIG)
     print(text.strip())
 
    # Extract data
-    data = data = pytesseract.image_to_data(img, output_type=Output.DICT, lang='eng', config='--psm 6')
+    data = data = pytesseract.image_to_data(img, output_type=Output.DICT, lang=TES_LANG, config=TES_CONFIG)
     n_boxes = len(data["text"])
 
     for i in range(n_boxes):
