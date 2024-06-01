@@ -11,7 +11,7 @@ PATH = "data/"
 OUT = PATH+"out.png"
 EASY = PATH + "easy1.png"
 EASY_TWO = PATH + "easy2.png"
-EASY_TEST = PATH + "test2.png"
+EASY_TEST = PATH + "test3.png"
 
 TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
 TES_LANG = 'eng_slashed_zeros'
@@ -76,10 +76,10 @@ def draw_bounding_boxes(img_in, img_out):
     # draw boxes
     for line in results:
         # if conf level > 0
-        if line[2] > 0:
+        if line[2] > 0.0:
             corners = line[0]
-            top_left = (corners[0][0], corners[0][1])
-            bottom_right = (corners[2][0], corners[2][1])
+            top_left = (int(corners[0][0]), int(corners[0][1]))
+            bottom_right = (int(corners[2][0]), int(corners[2][1]))
 
             # params
             green = (0, 255, 0)
