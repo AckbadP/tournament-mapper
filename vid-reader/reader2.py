@@ -4,13 +4,14 @@ import numpy as np
 from pytesseract import Output
 import argparse
 import imutils
+import easyocr
 from PIL import Image
 
 PATH = "data/"
 OUT = PATH+"out.png"
 EASY = PATH + "easy1.png"
 EASY_TWO = PATH + "easy2.png"
-EASY_TEST = PATH + "test2.png"
+EASY_TEST = PATH + "test7.png"
 
 TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
 TES_LANG = 'eng_slashed_zeros'
@@ -147,3 +148,11 @@ print(len(image_to_data(EASY_TWO)["text"]))'''
 
 print("------ Easy Test ------")
 draw_bounding_boxes(EASY_TEST, OUT)
+
+# ref: https://stackoverflow.com/questions/53090447/tesseract-ocr-confuses-slashed-0-as-8
+print("\n\n------ EasyOCR Test ------")
+img = cv2.imread(EASY_TEST)
+text_reader = easyocr.Reader(['en']) #Initialzing the ocr
+results = text_reader.readtext(img)
+for (bbox, text, prob) in results:
+    print(text)
