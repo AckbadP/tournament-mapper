@@ -36,11 +36,11 @@ def image_to_data(input_img):
 def draw_bounding_boxes(img_in, img_out):
     img = cv2.imread(img_in)
     img = preprocessing(img)
-    text = pytesseract.image_to_string(img)
+    text = pytesseract.image_to_string(img, lang='eng', config='--psm 6')
     print(text.strip())
 
    # Extract data
-    data = data = pytesseract.image_to_data(img, output_type=Output.DICT)
+    data = data = pytesseract.image_to_data(img, output_type=Output.DICT, lang='eng', config='--psm 6')
     n_boxes = len(data["text"])
 
     for i in range(n_boxes):
@@ -124,7 +124,8 @@ def resize(img):
 # can also try dilation, erosion, and canny edge detection
 
 def preprocessing(img):
-    img = resize(img)
+    #img = resize(img)
+    img = imutils.resize(img, width=500)
     img = grayscale(img)
     img = otsu_binarization(img)
     #img = adaptive_binarization(img)
