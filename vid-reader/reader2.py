@@ -151,9 +151,11 @@ def resize(img):
 # can also try dilation, erosion, and canny edge detection
 
 def preprocessing(img):
-    img = imutils.resize(img, width=2000)
     img = grayscale(img)
-    img = cv2.blur(img,(5,5)) # slight blur, no idea why this works
+    if img.shape[1] < 2000:
+        # only resize and blur if img is too small
+        img = imutils.resize(img, width=2000)
+        img = cv2.blur(img,(5,5)) # slight blur, no idea why this works
     #img = otsu_binarization(img) # significantly worsens preformance
     #img = adaptive_binarization(img)
     #img = dist_thresh(img)
