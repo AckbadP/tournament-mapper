@@ -2,6 +2,13 @@
 ## Author
     Ackbad Pappotte
 
+## Dependancies
+ - pytorch: https://pytorch.org/get-started/locally/
+ - GPU:
+    - if AMD gpu, RCOM: https://rocm.docs.amd.com/en/latest/
+    - if NVIDA gpu, CUDA:
+    - can also use default of cpu, but will be slower
+
 ## About
 
 ## Designe

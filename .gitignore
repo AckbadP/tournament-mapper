@@ -1,1 +1,4 @@
 *.mp4
+*.tiff
+*.ttf
+vid-reader/data/out.png
