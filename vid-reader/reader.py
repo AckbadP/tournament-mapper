@@ -1,84 +1,121 @@
-'''
-This is a script to take an input eve image and get the following info
- - the distance of the ship
- - the ship's type
- - the ship's piot
- - the direction of the ship relative to the camera
-'''
-from PIL import Image
-import pytesseract
 import cv2
 import numpy as np
+import imutils
+import easyocr
 
-# ref: https://nanonets.com/blog/ocr-with-tesseract/
-# get grayscale image
-def get_grayscale(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+DEBUG = True
 
-# noise removal
-def remove_noise(image):
-    return cv2.medianBlur(image,5)
- 
-#thresholding
-def thresholding(image):
-    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY)
+PATH = "data/"
+OUT = PATH+"out.png"
+EASY = PATH + "easy1.png"
+EASY_TWO = PATH + "easy2.png"
+EASY_TEST = PATH + "test4.png"
 
-#dilation
-def dilate(image):
-    kernel = np.ones((5,5),np.uint8)
-    return cv2.dilate(image, kernel, iterations = 1)
+TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
+TES_LANG = 'eng_slashed_zeros'
 
-#erosion
-def erode(image):
-    kernel = np.ones((5,5),np.uint8)
-    return cv2.erode(image, kernel, iterations = 1)
+class Reader():
 
-#opening - erosion followed by dilation
-def opening(image):
-    kernel = np.ones((5,5),np.uint8)
-    return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    def draw_bounding_boxes(self, img_in, img_out):
+        img = cv2.imread(img_in)
+        img = self.preprocessing(img)
+        text_reader = easyocr.Reader(['en'], gpu=True) #Initialzing the ocr
+        results = text_reader.readtext(img)
 
-#canny edge detection
-def canny(image):
-    return cv2.Canny(image, 100, 200)
+        # draw boxes
+        for line in results:
+            # if conf level > 0
+            if line[2] > 0.0:
+                corners = line[0]
+                top_left = (int(corners[0][0]), int(corners[0][1]))
+                bottom_right = (int(corners[2][0]), int(corners[2][1]))
 
-#skew correction
-def deskew(image):
-    coords = np.column_stack(np.where(image > 0))
-    angle = cv2.minAreaRect(coords)[-1]
-    if angle < -45:
-        angle = -(90 + angle)
-    else:
-        angle = -angle
-    (h, w) = image.shape[:2]
-    center = (w // 2, h // 2)
-    M = cv2.getRotationMatrix2D(center, angle, 1.0)
-    rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-    return rotated
+                # params
+                green = (0, 255, 0)
+                thicknes = 3
+                cv2.rectangle(img, top_left, bottom_right, green, thicknes)
+        cv2.imwrite(img_out, img)
 
-#template matching
-def match_template(image, template):
-    return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED) 
+        return results
 
-# pring text in image
-def image_text(image):
-    print(pytesseract.image_to_string(image).strip())
 
-path = 'data/'
-test_image = path + 'test1.png'
-img = cv2.imread(test_image)
-#print(pytesseract.image_to_string(Image.open('data/test1.png')))
-image_text(img)
-print("\n--- Grayscale ---\n")
-gray_img = get_grayscale(img)
-image_text(gray_img)
+    # Preprocessing funcs
 
-print("\n--- Thresholding ---\n")
-#img = cv2.imread(test_image)
-#image_text(thresholding(img))
+    def grayscale(self, img):
+        '''
+        convert image to grayscale
+        '''
+        return cv2.cvtColor(self, img, cv2.COLOR_BGR2GRAY)
 
-print("\n--- Opening ---\n")
-image_text(opening(img))
+    def denoise(img):
+        '''
+        slightly blure image to reduce noise
+        '''
+        return cv2.medianBlur(img, 5)
 
-print("\n--- Canny-Edge ---\n")
-image_text(canny(img))
+    def sharpen(self, img):
+        '''
+        sharpen image via Laplacian filter
+        '''
+        kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
+        return cv2.filter2D(img, -1, kernel)
+
+    def adaptive_binarization(self, img):
+        '''
+        use addaptive thresholding to binarize img
+        '''
+        thresh = cv2.adaptiveThreshold(
+            img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2
+        )
+        return thresh
+
+    def otsu_binarization(self, img):
+        '''
+        threshold the image using Otsu's thresholding method
+        '''
+        return cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+
+    def dist_thresh(self, img):
+        '''
+        apply distance transformation, normalice, then thresh
+        '''
+        img = cv2.distanceTransform(img, cv2.DIST_L2, 5)
+        img = cv2.normalize(img, img, 0, 1.0, cv2.NORM_MINMAX)
+        img = (img * 255).astype("uint8")
+
+        img = cv2.threshold(img, 0, 255,
+            cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+
+        return img
+
+    def resize(self, img, scale):
+        '''
+        resize image to make reading easier
+        '''
+        return cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+
+
+    # can also try dilation, erosion, and canny edge detection
+
+    def preprocessing(self, img):
+        '''
+        preprocessing steps for image
+        '''
+        img = grayscale(img)
+        if img.shape[1] < 2000:
+            # only resize and blur if img is too small
+            img = imutils.resize(img, width=2000)
+            img = cv2.blur(img,(5,5)) # slight blur, no idea why this works
+        #img = otsu_binarization(img) # significantly worsens preformance
+        return img
+
+
+    def read_image(self, img_path, output_path):
+        '''
+        take a file path and retun info in image
+        '''
+        results = draw_bounding_boxes(img_path, OUT)
+        if DEBUG:
+            for (_, text, prob) in results:
+                print(str(text)+" "+str(prob))
+        return results
