@@ -45,7 +45,7 @@ class Reader():
         '''
         convert image to grayscale
         '''
-        return cv2.cvtColor(self, img, cv2.COLOR_BGR2GRAY)
+        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     def denoise(img):
         '''
@@ -101,7 +101,7 @@ class Reader():
         '''
         preprocessing steps for image
         '''
-        img = grayscale(img)
+        img = self.grayscale(img)
         if img.shape[1] < 2000:
             # only resize and blur if img is too small
             img = imutils.resize(img, width=2000)
@@ -114,7 +114,7 @@ class Reader():
         '''
         take a file path and retun info in image
         '''
-        results = draw_bounding_boxes(img_path, OUT)
+        results = self.draw_bounding_boxes(img_path, OUT)
         if DEBUG:
             for (_, text, prob) in results:
                 print(str(text)+" "+str(prob))
