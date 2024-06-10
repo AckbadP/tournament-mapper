@@ -1,3 +1,5 @@
+remember to add tests for features as features are added
+
 # Open Issues
 - 1 get reader working on static image
     - still not reading isolated 0s on test4 img

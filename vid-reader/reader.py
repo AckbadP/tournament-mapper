@@ -15,32 +15,7 @@ TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
 TES_LANG = 'eng_slashed_zeros'
 
 class Reader():
-
-    def draw_bounding_boxes(self, img_in, img_out):
-        img = cv2.imread(img_in)
-        img = self.preprocessing(img)
-        text_reader = easyocr.Reader(['en'], gpu=True) #Initialzing the ocr
-        results = text_reader.readtext(img)
-
-        # draw boxes
-        for line in results:
-            # if conf level > 0
-            if line[2] > 0.0:
-                corners = line[0]
-                top_left = (int(corners[0][0]), int(corners[0][1]))
-                bottom_right = (int(corners[2][0]), int(corners[2][1]))
-
-                # params
-                green = (0, 255, 0)
-                thicknes = 3
-                cv2.rectangle(img, top_left, bottom_right, green, thicknes)
-        cv2.imwrite(img_out, img)
-
-        return results
-
-
     # Preprocessing funcs
-
     def grayscale(self, img):
         '''
         convert image to grayscale
@@ -110,11 +85,38 @@ class Reader():
         return img
 
 
-    def read_image(self, img_path, output_path):
+    def draw_bounding_boxes(self, img, img_data, img_out):
+        '''
+        take image data and draw bounding boxes around all text
+        '''
+        # draw boxes
+        for line in resimg_dataults:
+            # if conf level > 0
+            if line[2] > 0.0:
+                corners = line[0]
+                top_left = (int(corners[0][0]), int(corners[0][1]))
+                bottom_right = (int(corners[2][0]), int(corners[2][1]))
+
+                # params
+                green = (0, 255, 0)
+                thicknes = 3
+                cv2.rectangle(img, top_left, bottom_right, green, thicknes)
+        cv2.imwrite(img_out, img)
+
+    def read_image(self, img_path, output_path, draw_bounding_boxes=False):
         '''
         take a file path and retun info in image
         '''
-        results = self.draw_bounding_boxes(img_path, OUT)
+
+        # read image
+        img = cv2.imread(img_path)
+        img = self.preprocessing(img)
+        text_reader = easyocr.Reader(['en'], gpu=True) #Initialzing the ocr
+        results = text_reader.readtext(img)
+
+        if draw_bounding_boxes:
+            self.draw_bounding_box(img, results, output_path)
+
         if DEBUG:
             for (_, text, prob) in results:
                 print(str(text)+" "+str(prob))
