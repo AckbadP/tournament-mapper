@@ -3,7 +3,7 @@ import numpy as np
 import imutils
 import easyocr
 
-DEBUG = True
+DEBUG = False
 
 PATH = "data/"
 OUT = PATH+"out.png"
@@ -13,6 +13,8 @@ EASY_TEST = PATH + "test4.png"
 
 TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
 TES_LANG = 'eng_slashed_zeros'
+
+ROW_HIGHT_TOLLERANCE_PX = 50
 
 class Reader():
     # Preprocessing funcs
@@ -103,6 +105,30 @@ class Reader():
                 cv2.rectangle(img, top_left, bottom_right, green, thicknes)
         cv2.imwrite(img_out, img)
 
+    def collate_data(self, data):
+        '''
+        take indivigual data entries and combime them into overview rows
+        '''
+        rows = []
+        row = []
+        rowYPos = -100
+        for ent in data:
+            # if first entry
+            if rowYPos == -100:
+                rowYPos = ent[0][0][1]
+                row.append(ent[1])
+                continue
+            y = ent[0][0][1]
+            if y < (rowYPos + ROW_HIGHT_TOLLERANCE_PX) and y > (rowYPos - ROW_HIGHT_TOLLERANCE_PX):
+                row.append(ent[1])
+                continue
+            rows.append(row)
+            row = [ent[1]]
+            rowYPos = y
+        rows.append(row)
+        return rows
+
+
     def read_image(self, img_path, output_path, draw_bounding_boxes=False):
         '''
         take a file path and retun info in image
@@ -118,6 +144,6 @@ class Reader():
             self.draw_bounding_box(img, results, output_path)
 
         if DEBUG:
-            for (_, text, prob) in results:
-                print(str(text)+" "+str(prob))
+            for (coords, text, prob) in results:
+                print(str(coords)+" "+str(text)+" "+str(prob))
         return results
