@@ -128,6 +128,39 @@ class Reader():
         rows.append(row)
         return rows
 
+    def cleanup_data(self, data, fill_empty_with_zeros=True):
+        '''
+        fill empty overview spacces with 0s
+        '''
+        # drop first 3 elements
+        for _ in range(3):
+            data.pop(0)
+
+        # drop anything not an overview row
+        for elem in data:
+            if len(elem) < 4:
+                data.pop(elem)
+            if len(elem) > 9:
+                data.pop(elem)
+
+        # cleanup rows
+        for i in range(len(data)):
+            elem = data[i]
+            # fix dis/km inconsistant split
+            tmp = elem[0].split()
+            if len(tmp > 1):
+                elem[0] = tmp[0]
+            else:
+                elem.pop(1)
+
+            if fill_empty_with_zeros:
+                # find empty spaces
+                while len(elem) < 7:
+                    elem = elem[:-1] + ['0'] + elem[-1]
+
+            data[i] = elem
+        return data
+
 
     def read_image(self, img_path, output_path, draw_bounding_boxes=False):
         '''
