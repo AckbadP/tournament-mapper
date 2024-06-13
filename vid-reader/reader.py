@@ -14,7 +14,7 @@ EASY_TEST = PATH + "test4.png"
 TES_CONFIG = '--psm 6 --tessdata-dir "pyTesTrainData"'
 TES_LANG = 'eng_slashed_zeros'
 
-ROW_HIGHT_TOLLERANCE_PX = 50
+ROW_HIGHT_TOLLERANCE_PX = 25
 
 class Reader():
     # Preprocessing funcs
@@ -92,7 +92,7 @@ class Reader():
         take image data and draw bounding boxes around all text
         '''
         # draw boxes
-        for line in resimg_dataults:
+        for line in img_data:
             # if conf level > 0
             if line[2] > 0.0:
                 corners = line[0]
@@ -141,7 +141,7 @@ class Reader():
         results = text_reader.readtext(img)
 
         if draw_bounding_boxes:
-            self.draw_bounding_box(img, results, output_path)
+            self.draw_bounding_boxes(img, results, output_path)
 
         if DEBUG:
             for (coords, text, prob) in results:

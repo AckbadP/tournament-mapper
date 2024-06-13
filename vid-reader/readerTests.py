@@ -48,7 +48,7 @@ class TestOCRMethods(unittest.TestCase):
         self.assertEqual(nums, test_arr)
 
     def test_collate_rows(self):
-        data = self.r.read_image('data/test2.png', OUT)
+        data = self.r.read_image('data/test2.png', OUT, draw_bounding_boxes=True)
         rows = self.r.collate_data(data)
         expected_rows = [
             ['Overview (test', 'Not Saved)'],
@@ -62,6 +62,12 @@ class TestOCRMethods(unittest.TestCase):
         self.assertEqual(rows, expected_rows)
         #for row in rows:
         #    print(row)
+
+    def test_collate_rows_complex(self):
+        data = self.r.read_image('data/test4.png', OUT, draw_bounding_boxes=True)
+        rows = self.r.collate_data(data)
+        for row in rows:
+            print(row)
 
 if __name__ == '__main__':
     unittest.main()
