@@ -160,11 +160,22 @@ class Reader():
             # convert elements to numbers
             for j in range(len(elem)):
                 # strip commas
+                elem[j] = elem[j].replace(',', '')
 
                 # check for - and flip if present
+                negative = False
+                if '-' in elem[j]:
+                    tmp_num = elem[j].replace('-', '')
+                    negative = True
 
-                if elem[j].isnumeric():
-                    elem[j] = int(elem[j])
+                # do not run this check for pilot name
+                if j != 1:
+                    if negative and tmp_num.isnumeric():
+                        elem[j] = int(tmp_num)
+                        elem[j] = -elem[j]
+                    elif elem[j].isnumeric():
+                        elem[j] = int(elem[j])
+            # this means radial must always be last value in overview
             elem[-1] = float(elem[-1])
 
             if fill_empty_with_zeros:
