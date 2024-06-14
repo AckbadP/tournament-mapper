@@ -132,6 +132,12 @@ class Reader():
         '''
         fill empty overview spacces with 0s
 
+        row format is:
+        ['dist', 'km', 'name', 'type', 'speed', 'radial', 'trans', 'angular']
+        single digit numbers sometimes don't get read
+
+        potental issue with negative numbers
+
         don't call this more the once
         '''
         # drop first 3 elements
@@ -139,32 +145,32 @@ class Reader():
             data.pop(0)
 
         # drop anything not an overview row
-        for elem in data:
-            if len(elem) < 4:
-                data.pop(elem)
-            if len(elem) > 9:
-                data.pop(elem)
+        data = [elem for elem in data if len(elem) > 3 and len(elem) < 9]
 
         # cleanup rows
+
         for i in range(len(data)):
             elem = data[i]
             # fix dis/km inconsistant split
-            tmp = elem[0].split()
-            if len(tmp > 1):
-                elem[0] = tmp[0]
+            if not elem[0].isnumeric():
+                elem[0] = elem[0].split(' ')[0]
             else:
                 elem.pop(1)
+
+            # convert elements to numbers
+            for j in range(len(elem)):
+                # strip commas
+
+                # check for - and flip if present
+
+                if elem[j].isnumeric():
+                    elem[j] = int(elem[j])
+            elem[-1] = float(elem[-1])
 
             if fill_empty_with_zeros:
                 # find empty spaces
                 while len(elem) < 7:
-                    elem = elem[:-1] + ['0'] + elem[-1]
-
-            # convert elements to numbers
-            for i in range(len(elem)):
-                if elem[i].isnumeric():
-                    elem[i] = int(elem[i])
-            elem[-1] = float(elem[-1])
+                    elem = elem[:-1] + [0] + elem[-1:]
 
             data[i] = elem
         return data
