@@ -64,6 +64,7 @@ class TestOCRMethods(unittest.TestCase):
         #    print(row)
 
     def test_collate_rows_complex(self):
+        # TODO: this
         data = self.r.read_image('data/test4.png', OUT, draw_bounding_boxes=True)
         rows = self.r.collate_data(data)
         for row in rows:
@@ -102,9 +103,33 @@ class TestOCRMethods(unittest.TestCase):
             ['Zorg'],
             ['Navy'],
         ]
+        expected_out_zeros = [
+            [134, 'Rhea Izalith', 'Sigil', 0, 0, 0, 0.0],
+            [153, 'Ignis Firefang', 'Magnate', 0, 0, 0, 0.0],
+            [3790, 'Tyranikus Rex', 'Caracal', 3, 3, 0, 0.05],
+            [127, 'GefestRUS', 'Vexor', 23084, 6139, 23001, 10.35],
+            [3060, 'Seriy Kot', 'Caracal', 'Is', 262, 262, 9, 0.0],
+            [152, 'Zarkhon', 'Scorpion', 0, 0, 0, 0.0],
+            [148, 'DJ TheDoctorUK', 'Praxis', 0, 0, 0, 0.0],
+            [150, 'Kenneth McArthur', 'Badger', 0, 0, 0, 0.0],
+            [143, 'fm112', 'Tayra', 89, -62, 63, 0.03],
+            [130, 'Emady White', 'Hoarder', 368, 195, 296, 0.13],
+            [143, 'R2314', 'Capsule', 180, -125, 128, 0.05],
+            [174, 'breaker', 'Capsule', 0, 0, 0, 0.0],
+            [507542, 'Ghostrev', 'Minmatar Shuttl', 33652, 2425825792, 595895, 0.07],
+            [138, 'Gaowan Dragonson', 'Council Diploma', 655, 355, 546, 0.23],
+            [138, 'Ibis', 'Ibis', 0, 0, 0, 0.0],
+            [129, 'Por Prees', 'Velator', 0, 0, 0, 0.0],
+            [187, 'Lenil', 'Bustard', 67723, 58237, 37867, 11.55],
+            [353, 'Lucky', 9, 'Bustard', 125, 117, 43, 0.01],
+            [5242, 'erie coincidence', 'Occator', 139, -122, 69, 0.76],
+            [147, 'TheLordGoth', 'Thrasher', 303, -218, 212, 0.08],
+            [133, 'Chtulu Incarnate', 'Coercer', 'Is', 334, 167, 289, 0.12],
+            [114, 'Takaya Nono', 'Buzzard', 0, 0, 0, 0.0],
+            [145, 'Clark Sven', 'Tengu', 7576, -5633, 5414, 2.14],
+        ]
         out = self.r.cleanup_data(input)
-        for line in out:
-            print(line)
+        self.assertEqual(out, expected_out_zeros)
 
 if __name__ == '__main__':
     unittest.main()
