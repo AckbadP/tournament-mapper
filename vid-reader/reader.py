@@ -131,6 +131,8 @@ class Reader():
     def cleanup_data(self, data, fill_empty_with_zeros=True):
         '''
         fill empty overview spacces with 0s
+
+        don't call this more the once
         '''
         # drop first 3 elements
         for _ in range(3):
@@ -157,6 +159,12 @@ class Reader():
                 # find empty spaces
                 while len(elem) < 7:
                     elem = elem[:-1] + ['0'] + elem[-1]
+
+            # convert elements to numbers
+            for i in range(len(elem)):
+                if elem[i].isnumeric():
+                    elem[i] = int(elem[i])
+            elem[-1] = float(elem[-1])
 
             data[i] = elem
         return data
