@@ -9,10 +9,15 @@ class TestOCRMethods(unittest.TestCase):
     must be run from the vid-reader dir to function
     '''
     def setUp(self):
+        '''
+        setup called before each test
+        '''
         self.r = Reader()
 
-    
     def test_easy_one(self):
+        '''
+        test reader on very easy sample
+        '''
         #r = Reader()
         data = self.r.read_image('data/easy1.png', OUT)
         self.assertEqual(len(data), 6)
@@ -24,6 +29,9 @@ class TestOCRMethods(unittest.TestCase):
         self.assertEqual(line, "This text is easy to extract")
 
     def test_easy_two(self):
+        '''
+        test reader on slightly harder sample
+        '''
         #r = Reader()
         data = self.r.read_image('data/easy2.png', OUT)
         line = ""
@@ -37,6 +45,9 @@ class TestOCRMethods(unittest.TestCase):
         self.assertLess(len(line), 57)
 
     def test_signle_column(self):
+        '''
+        test reader on single overview column
+        '''
         data = self.r.read_image('data/test7.png', OUT)
         nums = []
         for (_, num, _) in data:
@@ -48,6 +59,9 @@ class TestOCRMethods(unittest.TestCase):
         self.assertEqual(nums, test_arr)
 
     def test_collate_rows(self):
+        '''
+        test creation of row data from simple overview sample
+        '''
         data = self.r.read_image('data/test2.png', OUT, draw_bounding_boxes=True)
         rows = self.r.collate_data(data)
         expected_rows = [
@@ -64,6 +78,9 @@ class TestOCRMethods(unittest.TestCase):
         #    print(row)
 
     def test_collate_rows_complex(self):
+        '''
+        test creation of row data on complex overview sample
+        '''
         # TODO: this
         data = self.r.read_image('data/test4.png', OUT, draw_bounding_boxes=True)
         rows = self.r.collate_data(data)
@@ -71,7 +88,10 @@ class TestOCRMethods(unittest.TestCase):
             print(row)
 
     def test_clean_data(self):
-        input = [
+        '''
+        test clean data method on example dirty imput
+        '''
+        data_in = [
             ['Overview (test)'],
             ['General', 'Targets', 'Mining', 'WarpTo', 'AlL', 'test'],
             ['Distance', 'Name', 'Velocity', 'Radial Velocity', 'Transversal Velocity', 'Angular'],
@@ -128,7 +148,7 @@ class TestOCRMethods(unittest.TestCase):
             [114, 'Takaya Nono', 'Buzzard', 0, 0, 0, 0.0],
             [145, 'Clark Sven', 'Tengu', 7576, -5633, 5414, 2.14],
         ]
-        out = self.r.cleanup_data(input)
+        out = self.r.cleanup_data(data_in)
         self.assertEqual(out, expected_out_zeros)
 
 if __name__ == '__main__':
