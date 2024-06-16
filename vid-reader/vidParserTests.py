@@ -7,13 +7,19 @@ class TestVidParser(unittest.TestCase):
     must be run from the vid-reader dir to function
     '''
 
-    def setup(self):
+    def setUp(self):
         '''
         test reader on very easy sample
         '''
-        return
+        self.p = Parser()
+
+    def test_parse_vid(self):
+        '''
+        test dividing vid up into frames
+        '''
+        self.p.parse_vid("data/vid1.mp4", "data")
+
 
 
 if __name__ == '__main__':
     unittest.main()
-    
