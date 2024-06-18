@@ -31,11 +31,16 @@ class TestVidParser(unittest.TestCase):
         f = open("data/test.txt", "r")
         data = f.read()
         data = ast.literal_eval(data)
-        #t = [int(n) for n in data[1] if n.isnumeric()]
-        #data = [int(data[0]), t]
         f.close()
         data = list(data)
         self.assertEqual(data, [77,[1,2,3,4,5, "test"]])
+
+    def test_vid_one(self):
+        '''
+        test parser on 10s vid 
+        '''
+        self.p.main("data/vid1.mp4", "data/test.txt")
+
 
 
 if __name__ == '__main__':

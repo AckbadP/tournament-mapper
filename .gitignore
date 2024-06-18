@@ -2,6 +2,8 @@
 *.mkv
 *.tiff
 *.ttf
+*.xz
 
 vid-reader/data/out.png
 vid-reader/data/frames/*
+vid-reader/data/test.txt

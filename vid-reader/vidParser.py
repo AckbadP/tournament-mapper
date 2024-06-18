@@ -66,15 +66,14 @@ class Parser:
         if not self.outfile_exists:
             self.create_data_file(DEFAULT_OUTFILE_NAME)
 
+        if DEBUG:
+            print("---------- Frame: "+str(count)+" ----------")
+            for line in data:
+                print(str(count)+": "+str(line))
+            
         data = [count, data]
-        #data = lzma.compress(data)
-
-        #compressor = lzma.LZMACompressor() 
-        #data = compressor.compress(data)
-        #data = bytes(data)
         self.outfile.write(",".join(str(item) for item in data))
-        #data = lzma.flush()
-        #self.outfile.write(data)
+        self.outfile.write("\n")
 
     def main(self, path_in, path_out, fps=1):
         '''
@@ -87,7 +86,7 @@ class Parser:
         success = True
 
         self.out_file_exists = False
-        self.create_data_file(path_out+".xz")
+        self.create_data_file(path_out)
 
         while True:
             vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000 * 1/fps))
