@@ -187,13 +187,13 @@ class Reader():
         return data
 
 
-    def read_image(self, img_path, output_path, draw_bounding_boxes=False):
+    def read_image(self, img, output_path, draw_bounding_boxes=False):
         '''
         take a file path and retun info in image
         '''
 
         # read image
-        img = cv2.imread(img_path)
+        #img = cv2.imread(img_path)
         img = self.preprocessing(img)
         text_reader = easyocr.Reader(['en'], gpu=True) #Initialzing the ocr
         results = text_reader.readtext(img)

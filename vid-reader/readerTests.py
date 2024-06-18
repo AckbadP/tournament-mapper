@@ -1,4 +1,5 @@
 import unittest
+import cv2
 from reader import Reader
 
 OUT = 'data/out.png'
@@ -19,7 +20,8 @@ class TestOCRMethods(unittest.TestCase):
         test reader on very easy sample
         '''
         #r = Reader()
-        data = self.r.read_image('data/easy1.png', OUT)
+        img = cv2.imread('data/easy1.png')
+        data = self.r.read_image(img, OUT)
         self.assertEqual(len(data), 6)
         line = ""
         for (_, word, _) in data:
@@ -33,7 +35,8 @@ class TestOCRMethods(unittest.TestCase):
         test reader on slightly harder sample
         '''
         #r = Reader()
-        data = self.r.read_image('data/easy2.png', OUT)
+        img = cv2.imread('data/easy2.png')
+        data = self.r.read_image(img, OUT)
         line = ""
         for (_, word, _) in data:
             line += word
@@ -48,7 +51,8 @@ class TestOCRMethods(unittest.TestCase):
         '''
         test reader on single overview column
         '''
-        data = self.r.read_image('data/test7.png', OUT)
+        img = cv2.imread('data/test7.png')
+        data = self.r.read_image(img, OUT)
         nums = []
         for (_, num, _) in data:
             nums.append(int(num))
@@ -62,7 +66,8 @@ class TestOCRMethods(unittest.TestCase):
         '''
         test creation of row data from simple overview sample
         '''
-        data = self.r.read_image('data/test2.png', OUT, draw_bounding_boxes=True)
+        img = cv2.imread('data/test2.png')
+        data = self.r.read_image(img, OUT, draw_bounding_boxes=True)
         rows = self.r.collate_data(data)
         expected_rows = [
             ['Overview (test', 'Not Saved)'],
@@ -82,7 +87,8 @@ class TestOCRMethods(unittest.TestCase):
         test creation of row data on complex overview sample
         '''
         # TODO: this
-        data = self.r.read_image('data/test4.png', OUT, draw_bounding_boxes=True)
+        img = cv2.imread('data/test4.png')
+        data = self.r.read_image(img, OUT, draw_bounding_boxes=True)
         rows = self.r.collate_data(data)
         for row in rows:
             print(row)
