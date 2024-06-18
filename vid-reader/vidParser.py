@@ -94,6 +94,7 @@ class Parser:
             if DEBUG:
                 print("read frame "+str(count))
             count += 1
+        self.close_data_file()
 
 
 if __name__ == '__main__':
