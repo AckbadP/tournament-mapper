@@ -5,14 +5,14 @@ from reader import Reader
 
 DEBUG = True
 
-DEFAULT_OUTFILE_NAME = "data/out.xz"
+DEFAULT_OUTFILE_NAME = "data/out.txt"
 
 class Parser:
     '''
     class that handles converting vid to spaceship data
     '''
     def __init__(self):
-        self.out_file_exists = False
+        self.outfile_exists = False
         self.outfile = None
 
 
@@ -45,10 +45,12 @@ class Parser:
         '''
         create output file
         '''
-        if self.out_file_exists:
+        if self.outfile_exists:
             return
 
-        self.outfile = lzma.open(outfile, mode="w")
+        #self.outfile = lzma.LZMAFile(outfile, mode="wb")
+        self.outfile = open(outfile, "w")
+        self.outfile_exists = True
 
     def close_data_file(self):
         '''
@@ -61,11 +63,18 @@ class Parser:
         '''
         write data to compressed file
         '''
-        if not self.out_file_exists:
+        if not self.outfile_exists:
             self.create_data_file(DEFAULT_OUTFILE_NAME)
 
         data = [count, data]
-        self.outfile.write(data)
+        #data = lzma.compress(data)
+
+        #compressor = lzma.LZMACompressor() 
+        #data = compressor.compress(data)
+        #data = bytes(data)
+        self.outfile.write(",".join(str(item) for item in data))
+        #data = lzma.flush()
+        #self.outfile.write(data)
 
     def main(self, path_in, path_out, fps=1):
         '''
